@@ -53,7 +53,7 @@ const ChatApp = () => {
         });
     };
     useEffect(() => {
-        const newSocket = io('http://localhost:1234', {
+        const newSocket = io(import.meta.env.VITE_APP_baseApiURL, {
             auth: { user }
         });
         setSocket(newSocket);
