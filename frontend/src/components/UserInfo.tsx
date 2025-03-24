@@ -4,7 +4,11 @@ import { getInitialsName } from "@/utils/utils"
 import { Popover, PopoverButton, PopoverPanel, Transition } from "@headlessui/react"
 import { Tooltip } from "react-tooltip"
 
-const UserInfo = ({ userData, color }: { userData: userProps, color: string }) => {
+const UserInfo = ({ userData, color, align = "center" }: {
+    userData: userProps,
+    color: string,
+    align?: "start" | "center" | "end",
+}) => {
     const { user } = useAppSelector(state => state.app);
     return (
         <div className="px-4">
@@ -26,7 +30,14 @@ const UserInfo = ({ userData, color }: { userData: userProps, color: string }) =
                             leaveFrom='opacity-100 translate-y-0'
                             leaveTo='opacity-0 translate-y-1'
                         >
-                            <PopoverPanel className='w-80 -translate-x-1/2 absolute left-1/2 max-w-sm mt-3 px-4 sm:px-0 transform z-10'>
+                            <PopoverPanel className={cn(
+                                'w-80 max-w-sm mt-3 px-4 sm:px-0 transform z-10',
+                                align === "center" ?
+                                    "-translate-x-1/2 absolute left-1/2" :
+                                    align === "start" ?
+                                        "absolute left-0" :
+                                        "absolute right-0"
+                            )}>
                                 <div className='flex bg-white p-6 rounded-lg shadow-lg box-shadow-custom gap-4 items-center'>
                                     <div className={cn('w-16 h-16 bg-blue-600 rounded-full text-white flex items-center justify-center text-2xl', color)}>
                                         <span className='text-center font-bold'>
@@ -35,10 +46,10 @@ const UserInfo = ({ userData, color }: { userData: userProps, color: string }) =
                                     </div>
                                     <div className='flex flex-1 flex-col gap-y-1'>
                                         <p className='text-black text-xl font-bold'>{userData?.name}</p>
-                                        <span className='text-base text-gray-500'>{userData?.title}</span>
-                                        <span className='text-blue-500'>
+                                        <span className='text-base text-gray-500'>{userData?.role}</span>
+                                        <a href={`mailto:${userData?.email}`} className='text-blue-700 font-semibold'>
                                             {user.isAdmin && (userData?.email ?? "email@example.com")}
-                                        </span>
+                                        </a>
                                     </div>
                                 </div>
                             </PopoverPanel>

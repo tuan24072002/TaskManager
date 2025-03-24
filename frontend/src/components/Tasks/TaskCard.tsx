@@ -12,13 +12,13 @@ import { IoMdAdd } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import AddSubTask from "./AddSubTask";
 
-const TaskCard = ({ task }: { task: taskProps }) => {
+const TaskCard = ({ task, isDragging = false }: { task: taskProps, isDragging?: boolean; }) => {
     const navigate = useNavigate();
     const { user } = useAppSelector(state => state.app);
     const [open, setOpen] = useState(false);
     return (
         <>
-            <div className="bg-white h-fit p-4 rounded-md shadow-md w-full">
+            <div className={cn("bg-white w-full h-fit p-4 rounded-md shadow-md box-shadow-card", isDragging && "ring-2 ring-blue-400")}>
                 <div className="flex justify-between w-full">
                     <div className={cn("flex flex-1 gap-1 items-center text-sm font-medium", PRIOTITYSTYELS[task.priority as keyof typeof PRIOTITYSTYELS])}>
                         <span className="text-lg">
@@ -58,7 +58,7 @@ const TaskCard = ({ task }: { task: taskProps }) => {
                                 <div key={`Team map: ${index}`}
                                     className={cn("size-7 rounded-full text-white flex items-center justify-center text-sm -mr-1", BGS[index % BGS.length])}
                                 >
-                                    <UserInfo color={BGS[index % BGS.length]} userData={m} />
+                                    <UserInfo color={BGS[index % BGS.length]} userData={m} align={"end"} />
                                 </div>
                             ))
                         }

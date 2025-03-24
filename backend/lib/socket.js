@@ -8,7 +8,7 @@ import { Server as SocketServer } from "socket.io";
 export default function initSocket(server) {
     const io = new SocketServer(server, {
         cors: {
-            origin: process.env.FRONTEND_URL || "http://localhost:3000",
+            origin: [process.env.FRONTEND_URL, "http://localhost:3000"],
             methods: ["GET", "POST"]
         }
     });

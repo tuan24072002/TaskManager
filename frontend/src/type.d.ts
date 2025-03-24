@@ -35,6 +35,7 @@ interface userProps {
   email: string;
   createdAt?: string;
 }
+
 interface typeTaskProps {
   todo: number;
   "in progress": number;

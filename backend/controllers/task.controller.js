@@ -290,7 +290,7 @@ export const updateTask = async (req, res) => {
             task.date = date;
             task.team = formatTeam;
             task.stage = stage.toLowerCase();
-            task.priority = priority.toLowerCase();
+            task.priority = priority?.toLowerCase();
             task.assets = assets;
             task.description = description;
         } else {
@@ -300,7 +300,7 @@ export const updateTask = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: "Task duplicated successfully."
+            message: "Task updated successfully."
         });
     } catch (error) {
         return res.status(400).json({

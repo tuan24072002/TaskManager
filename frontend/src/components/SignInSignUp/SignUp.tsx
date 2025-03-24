@@ -133,24 +133,26 @@ const SignUp = ({ setModule }: SignUpProps) => {
                                 Who are you?
                             </p>
                             <div className="flex flex-wrap gap-x-2 gap-y-3">
-                                {ITRoles.map((item, index) => (
-                                    <button
-                                        type="button"
-                                        key={`IT Roles: ${index}`}
-                                        onClick={() => {
-                                            setSelectedRole(item);
-                                            setValue("role", item);
-                                            setValue("title", item);
-                                        }}
-                                        className={cn(
-                                            "w-fit text-sm rounded-full bg-gray-100 py-1 px-2 hover:-translate-y-1 border border-transparent hover:border-[rgba(203,37,156,0.671)] hover:text-[rgba(203,37,156,0.671)] hover:bg-white font-semibold transition-all duration-300",
-                                            selectedRole === item &&
-                                            "border-[rgba(203,37,156,0.671)] bg-white text-[rgba(203,37,156,0.671)]"
-                                        )}
-                                    >
-                                        {item}
-                                    </button>
-                                ))}
+                                {ITRoles
+                                    .filter(item => item !== "Administrator")
+                                    .map((item, index) => (
+                                        <button
+                                            type="button"
+                                            key={`IT Roles: ${index}`}
+                                            onClick={() => {
+                                                setSelectedRole(item);
+                                                setValue("role", item);
+                                                setValue("title", item);
+                                            }}
+                                            className={cn(
+                                                "w-fit text-sm rounded-full bg-gray-100 py-1 px-2 hover:-translate-y-1 border border-transparent hover:border-[rgba(203,37,156,0.671)] hover:text-[rgba(203,37,156,0.671)] hover:bg-white font-semibold transition-all duration-300",
+                                                selectedRole === item &&
+                                                "border-[rgba(203,37,156,0.671)] bg-white text-[rgba(203,37,156,0.671)]"
+                                            )}
+                                        >
+                                            {item}
+                                        </button>
+                                    ))}
                             </div>
                             {(errors.role || errors.title) && (
                                 <p className="text-red-500 font-semibold mt-2 text-sm">{errors.role?.message as string}</p>

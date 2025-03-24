@@ -5,6 +5,7 @@ import emptyBox2 from "./empty_box_2.svg";
 import emptyBox3 from "./empty_box_3.svg";
 import emptyList from "./empty_list.svg";
 import logo from "./logo.svg";
+import SreenError from "./SreenError.png";
 const Images = {
   NoAvt: NoAvt,
   NoUser: NoUser,
@@ -13,5 +14,6 @@ const Images = {
   emptyBox3: emptyBox3,
   emptyList: emptyList,
   logo: logo,
+  SreenError: SreenError,
 };
 export default Images;

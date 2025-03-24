@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from "@headlessui/react";
 import { getInitialsName } from "@/utils/utils";
@@ -9,15 +9,19 @@ import { AuthService } from "@/services/Auth.service";
 import { setLogined, setUser } from "@/slices/app.slice";
 import { MdSettings } from "react-icons/md";
 import { cn } from "@/lib/utils";
+import AddUser from "../Users/AddUser";
+import { changeAction, resetActionState, selectItem } from "@/slices/user.slice";
+import { toast } from "sonner";
+import { UserService } from "@/services/User.service";
 const UserAvatar = () => {
     const dispatch = useAppDispatch();
     const { user } = useAppSelector(state => state.app);
+    const userState = useAppSelector(state => state.user);
     const navigate = useNavigate();
-    const [open, setOpen] = useState(false);
+    const [openProfile, setOpenProfile] = useState(false);
     const [openPassword, setOpenPassword] = useState(false);
     const [openSetting, setOpenSetting] = useState(false);
     console.log({
-        open,
         openPassword,
         openSetting,
     });
@@ -28,9 +32,23 @@ const UserAvatar = () => {
         AuthService.logout();
         navigate('/signin');
     }
-
+    useEffect(() => {
+        switch (userState.statusAction) {
+            case "failed":
+                toast.error(userState.error);
+                dispatch(resetActionState());
+                break;
+            case "loading":
+                break;
+            case "completed":
+                dispatch(setUser(JSON.parse(localStorage.getItem("user") as string)));
+                dispatch(resetActionState());
+                toast.success(userState.success);
+                break;
+        }
+    }, [dispatch, userState])
     return (
-        <div>
+        <>
             <Menu className="text-left inline-block relative" as="div">
                 <MenuButton className={cn("size-10 2xl:size-12 items-center justify-center rounded-full bg-blue-600")}>
                     <span className="text-white font-semibold">
@@ -49,7 +67,11 @@ const UserAvatar = () => {
                     <MenuItems className="bg-white rounded-md shadow-2xl w-56 absolute divide-gray-100 focus:outline-none mt-2 origin-top-right right-0 ring-1 ring-black/5">
                         <MenuItem>
                             {() => (
-                                <button className="flex rounded-none text-base text-gray-700 w-full group hover:bg-gray-100 items-center px-4 py-2" onClick={() => setOpen(true)}>
+                                <button className="flex rounded-none text-base text-gray-700 w-full group hover:bg-gray-100 items-center px-4 py-2" onClick={() => {
+                                    dispatch(changeAction("UPD"));
+                                    dispatch(selectItem(UserService.itemFromJson(user)));
+                                    setOpenProfile(true);
+                                }}>
                                     <FaUser className="mr-2" aria-hidden='true' />
                                     Profile
                                 </button>
@@ -92,7 +114,12 @@ const UserAvatar = () => {
                     </MenuItems>
                 </Transition>
             </Menu>
-        </div >
+            <AddUser
+                open={openProfile}
+                setOpen={setOpenProfile}
+                title="Update Profile"
+            />
+        </ >
     )
 }
 

@@ -18,6 +18,18 @@ export const UserService = {
     }
     return list;
   },
+  itemFromJson(data: any) {
+    const item = {
+      id: data._id,
+      name: data.name,
+      title: data.title,
+      role: data.role,
+      isActive: data.isActive,
+      email: data.email,
+      createdAt: data.createdAt,
+    };
+    return item;
+  },
   async getTeam(data: any) {
     const res = await HttpService.doGetRequest(`/user/get-team`, data);
     return parseCommonHttpResult(res);

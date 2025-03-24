@@ -319,7 +319,7 @@ const ChatBox = ({
                                         chatState.receiver === "model")
                                 )
                             ) &&
-                            <div className='text-left text-sm italic text-gray-500 flex items-center gap-2'>
+                            <div className='text-left text-sm italic text-blue-600 flex items-center gap-2'>
                                 <p>
                                     {
                                         typingInfo.sender === "user" ? "Người dùng đang nhập" :

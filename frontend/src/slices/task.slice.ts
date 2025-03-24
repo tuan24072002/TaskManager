@@ -10,6 +10,7 @@ interface TaskState extends ActionSliceState {
   item: TaskModel;
   loading: boolean;
   stage: stageProps;
+  statusStage: "idle" | "loading" | "completed" | "failed";
 }
 
 const initialState: TaskState = {
@@ -20,6 +21,7 @@ const initialState: TaskState = {
   statusAction: "idle",
   action: "INS",
   stage: "todo",
+  statusStage: "idle",
 };
 
 export const fetchAll: any = commonCreateAsyncThunk({
@@ -36,6 +38,10 @@ export const addItem: any = commonCreateAsyncThunk({
 });
 export const editItem: any = commonCreateAsyncThunk({
   type: "task/editItem",
+  action: TaskService.editItem,
+});
+export const changStageItem: any = commonCreateAsyncThunk({
+  type: "task/changStageItem",
   action: TaskService.editItem,
 });
 export const softDeleteItem: any = commonCreateAsyncThunk({
@@ -70,6 +76,9 @@ export const taskSlice = createSlice({
     },
     resetActionState: (state) => {
       state.statusAction = "idle";
+    },
+    resetStageState: (state) => {
+      state.statusStage = "idle";
     },
     resetState: (state) => {
       state.status = "idle";
@@ -147,6 +156,19 @@ export const taskSlice = createSlice({
         state.statusAction = "failed";
         state.error = errorMessage(error);
       })
+      .addCase(changStageItem.fulfilled, (state, action) => {
+        state.success =
+          action.payload.data !== "" ? action.payload.data.message : "";
+        state.statusStage = "completed";
+      })
+      .addCase(changStageItem.pending, (state) => {
+        state.statusStage = "loading";
+      })
+      .addCase(changStageItem.rejected, (state, action) => {
+        const error = Object(action.payload);
+        state.statusStage = "failed";
+        state.error = errorMessage(error);
+      })
       .addCase(softDeleteItem.fulfilled, (state, action) => {
         state.success =
           action.payload.data !== "" ? action.payload.data.message : "";
@@ -218,6 +240,7 @@ export const {
   selectItem,
   resetActionState,
   resetState,
+  resetStageState,
   changeAction,
   setLoading,
   setStage,

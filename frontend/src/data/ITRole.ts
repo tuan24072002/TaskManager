@@ -1,4 +1,5 @@
 export const ITRoles = [
+  "Administrator",
   "Developer",
   "UI/UX Designer",
   "Product Manager",

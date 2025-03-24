@@ -36,6 +36,7 @@ export const activateUserProfile: any = commonCreateAsyncThunk({
   type: "user/activateUserProfile",
   action: UserService.activateUserProfile,
 });
+
 export const userSlice = createSlice({
   name: "user",
   initialState,
@@ -76,6 +77,17 @@ export const userSlice = createSlice({
       .addCase(updateUserProfile.fulfilled, (state, action) => {
         state.success =
           action.payload.data != "" ? action.payload.data.message : "";
+        const user = JSON.parse(localStorage.getItem("user") as string);
+        if (
+          user &&
+          action.payload.data &&
+          user._id === action.payload.data.data._id
+        ) {
+          localStorage.setItem(
+            "user",
+            JSON.stringify(action.payload.data.data)
+          );
+        }
         state.statusAction = "completed";
       })
       .addCase(updateUserProfile.pending, (state) => {

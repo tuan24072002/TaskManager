@@ -4,7 +4,7 @@ import Loader from "@/components/Loader";
 import Title from "@/components/Title";
 import AddUser from "@/components/Users/AddUser";
 import { cn } from "@/lib/utils";
-import { activateUserProfile, changeAction, deleteUserProfile, fetchAllTeam, resetActionState } from "@/slices/user.slice";
+import { activateUserProfile, changeAction, deleteUserProfile, fetchAllTeam, resetActionState, selectItem } from "@/slices/user.slice";
 import { BGS, getInitialsName } from "@/utils/utils";
 import { useEffect, useState } from "react"
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -18,24 +18,21 @@ const Users = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [open, setOpen] = useState(false);
     const [openAction, setOpenAction] = useState(false);
-    const [selected, setSelected] = useState<userProps | null>(null);
     const [msg, setMsg] = useState("");
-    const deleteClick = (user: userProps) => {
-        setSelected(user);
+    const deleteClick = () => {
         setOpenDialog(true);
     };
     const deleteHandler = async () => {
         await dispatch(deleteUserProfile({
-            id: selected?.id,
+            id: userState.item.id,
         }))
     };
     const userActionHandler = async () => {
         await dispatch(activateUserProfile({
-            id: selected?.id,
+            id: userState.item.id,
         }))
     };
-    const editClick = (user: userProps) => {
-        setSelected(user);
+    const editClick = () => {
         setOpen(true);
     };
     useEffect(() => {
@@ -111,7 +108,6 @@ const Users = () => {
                                                             className="bg-yellow-50 border border-yellow-200 p-3 rounded text-sm text-yellow-600 duration-200 hover:bg-yellow-100 hover:text-yellow-700 transition-colors"
                                                             type="button"
                                                             onClick={() => {
-                                                                setSelected(user);
                                                                 setMsg(
                                                                     user.isActive ?
                                                                         "Are you sure you want to deactive this account?" :
@@ -130,7 +126,8 @@ const Users = () => {
                                                             className="bg-blue-50 border border-blue-200 p-3 rounded text-blue-600 text-sm duration-200 hover:bg-blue-100 hover:text-blue-700 transition-colors"
                                                             type="button"
                                                             onClick={() => {
-                                                                editClick(user);
+                                                                editClick();
+                                                                dispatch(selectItem(user));
                                                                 dispatch(changeAction("UPD"));
                                                             }}
                                                         >
@@ -139,7 +136,7 @@ const Users = () => {
                                                         <button
                                                             className="bg-red-50 border border-red-200 p-3 rounded text-red-600 text-sm duration-200 hover:bg-red-100 hover:text-red-700 transition-colors"
                                                             type="button"
-                                                            onClick={() => deleteClick(user)}
+                                                            onClick={() => deleteClick()}
                                                         >
                                                             <FaRegTrashAlt />
                                                         </button>
@@ -157,7 +154,6 @@ const Users = () => {
             <AddUser
                 open={open}
                 setOpen={setOpen}
-                userData={selected!}
             />
 
             <ConfirmDialog
