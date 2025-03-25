@@ -6,9 +6,9 @@ const BoardView = ({ tasks }: { tasks: taskProps[] }) => {
     return (
         <div
             style={{
-                height: height - 206
+                maxHeight: height - 214
             }}
-            className="w-full pb-2 overflow-y-auto overflow-x-hidden grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
+            className="w-full h-full pb-2 overflow-y-auto overflow-x-hidden grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
             {
                 tasks.map((task, index) => (
                     <TaskCard key={`Task Card: ${index}`} task={task} />

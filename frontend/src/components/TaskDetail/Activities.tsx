@@ -26,7 +26,7 @@ const Activities = ({ activity, id }: { activity: activitiesProps[], id: string 
                 "h-[676px] w-full flex gap-4 transition-all duration-500"
             )}>
                 <div className={cn(
-                    "flex-1 max-h-[calc(100vh-206px)] bg-white rounded-md shadow px-10 py-8 overflow-y-auto overflow-x-hidden")}>
+                    "flex-1 max-h-[calc(100vh-214px)] bg-white rounded-md shadow px-10 py-8 overflow-y-auto overflow-x-hidden")}>
                     <div className="w-full">
                         {
                             activity.map((act, index) => {

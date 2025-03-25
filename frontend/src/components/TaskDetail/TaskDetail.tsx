@@ -17,7 +17,7 @@ const TaskDetail = ({ task }: { task: taskProps }) => {
     return (
         <>
             <div
-                style={{ maxHeight: height - 206 }}
+                style={{ maxHeight: height - 214 }}
                 className="w-full bg-white overflow-y-auto overflow-x-hidden flex md:flex-row flex-col gap-10 shadow-md rounded-md p-4">
                 <div className="w-full h-full md:w-1/2">
                     <div className="flex items-center gap-5">
