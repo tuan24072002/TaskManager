@@ -4,6 +4,7 @@ import SortableTaskCard from "./SortableTaskCard ";
 import { TaskModel } from "@/model/Task.model";
 import Assets from "@/assets";
 import { cn } from "@/lib/utils";
+import useWindowSize from "@/app/screen";
 
 
 interface TaskColumnProps {
@@ -12,6 +13,7 @@ interface TaskColumnProps {
 }
 
 const TaskColumn = ({ id, tasks }: TaskColumnProps) => {
+    const { height } = useWindowSize();
     const { setNodeRef, isOver } = useDroppable({ id });
     const tasksIds = tasks.map(task => task.id);
 
@@ -19,9 +21,12 @@ const TaskColumn = ({ id, tasks }: TaskColumnProps) => {
         <div
             ref={setNodeRef}
             className={cn(
-                "bg-white h-[623px] w-full overflow-y-auto scroll-smooth scroll-hidden rounded-md flex flex-col gap-y-4 p-3",
+                `w-full bg-white overflow-y-auto scroll-smooth scroll-hidden rounded-md flex flex-col gap-y-4 p-3`,
                 isOver && "ring-1 ring-blue-500 bg-blue-50 transition-all duration-200"
             )}
+            style={{
+                height: height - 306
+            }}
         >
             <SortableContext items={tasksIds} strategy={verticalListSortingStrategy}>
                 {tasks.map((task) => (

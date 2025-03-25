@@ -7,19 +7,15 @@ import AddSubTask from "../Tasks/AddSubTask"
 import { IoMdAdd } from "react-icons/io"
 import { useAppSelector } from "@/app/hooks"
 import Assets from "@/assets"
-import useWindowSize from "@/app/screen"
 
 
 const TaskDetail = ({ task }: { task: taskProps }) => {
     const { user } = useAppSelector(state => state.app);
     const [open, setOpen] = useState(false);
-    const { height } = useWindowSize();
     return (
         <>
-            <div
-                style={{ maxHeight: height - 206 }}
-                className="w-full bg-white overflow-y-auto overflow-x-hidden flex md:flex-row flex-col gap-10 shadow-md rounded-md p-4">
-                <div className="w-full h-full md:w-1/2">
+            <div className="w-full h-[620px] flex md:flex-row flex-col bg-white shadow-md overflow-y-auto !p-8">
+                <div className="w-full md:w-1/2">
                     <div className="flex items-center gap-5">
                         <div className={cn(
                             "flex gap-1 items-center text-base font-semibold px-3 py-1 rounded-full",
@@ -34,8 +30,8 @@ const TaskDetail = ({ task }: { task: taskProps }) => {
                             <span className="textblack uppercase">{task?.stage}</span>
                         </div>
                     </div>
-                    <p className="text-gray-500 py-4 flex items-center gap-2">
-                        Due date: <span className="font-semibold text-slate-600">{formatDateTime(new Date(task?.date || ""))}</span>
+                    <p className="text-gray-500">
+                        Created At: {formatDateTime(new Date(task?.date || ""))}
                     </p>
                     <div className="flex items-center gap-4 p-4 border-y border-gray-200">
                         <div className="space-y-2">
@@ -48,12 +44,12 @@ const TaskDetail = ({ task }: { task: taskProps }) => {
                             <span className="font-bold">{(task?.subTasks || []).length}</span>
                         </div>
                     </div>
-                    <div className="space-y-4 py-4">
+                    <div className="space-y-4 py-2">
                         <p className="text-gray-600 font-semibold text-sm">TASK TEAM: </p>
-                        <div className="flex flex-col">
+                        <div className="space-y-3">
                             {
                                 (task?.team || []).map((team, index) => (
-                                    <div className="flex gap-4 py-3 items-center border-t border-gray-200" key={`Team map: ${index}`}>
+                                    <div className="flex gap-4 py-2 items-center border-t border-gray-200" key={`Team map: ${index}`}>
                                         <div className={cn("size-10 rounded-full text-white flex items-center justify-center text-sm -mr-1", BGS[index % BGS.length])}>
                                             <span className="text-center">
                                                 {getInitialsName(team.name)}
@@ -62,9 +58,9 @@ const TaskDetail = ({ task }: { task: taskProps }) => {
                                         <div className="flex-1 flex flex-col gap-0 items-start justify-center">
                                             <div className="w-full flex md:flex-row flex-col md:items-center justify-between">
                                                 <p className="text-lg font-semibold">{team.name}</p>
-                                                <a href={`mailto:${team.email}`} className="text-blue-700 font-semibold">
+                                                <p className="text-blue-600">
                                                     {team.email}
-                                                </a>
+                                                </p>
                                             </div>
                                             <span className="text-gray-500">{team.title}</span>
                                         </div>
@@ -97,7 +93,7 @@ const TaskDetail = ({ task }: { task: taskProps }) => {
                                         </div>
                                         <div className="space-y-1">
                                             <div className="flex gap-2 items-center">
-                                                <span className="text-sm font-semibold text-slate-600">
+                                                <span className="text-sm text-gray-500">
                                                     {formatDate(new Date(subTask.date))}
                                                 </span>
                                                 {
@@ -113,18 +109,36 @@ const TaskDetail = ({ task }: { task: taskProps }) => {
                         </div>
                     </div>
                 </div>
+                {/* <div className="w-full md:w-1/2 space-y-8">
+                    {
+                        (task?.assets || []).length > 0 &&
+                        <>
+                            <p className="text-lg font-semibold">ASSETS</p>
+                            <div className="w-full grid grid-cols-2 gap-4">
+                                {(task?.assets || []).map((asset, index) => (
+                                    <img
+                                        key={`Assets ${index}`}
+                                        src={asset}
+                                        alt={task.title}
+                                        className="w-full rounded h-28 md:h-36 2xl:h-52 cursor-pointer transition-all duration-700 hover:scale-125 hover:z-50"
+                                    />
+                                ))}
+                            </div>
+                        </>
+                    }
+                </div> */}
                 <div className="w-full md:w-1/2 space-y-8">
                     <p className="text-lg font-semibold">ASSETS</p>
                     <div className="w-full grid grid-cols-2 gap-4">
                         <img
                             src={Assets.Images.SreenError}
-                            alt={task?.title}
+                            alt={task.title}
                             className="w-full rounded h-28 md:h-36 2xl:h-52 cursor-pointer transition-all duration-700 hover:scale-125 hover:z-50"
                         />
                     </div>
                 </div>
             </div>
-            <AddSubTask open={open} setOpen={setOpen} id={task?.id || ""} />
+            <AddSubTask open={open} setOpen={setOpen} id={task.id || ""} />
         </>
     )
 }

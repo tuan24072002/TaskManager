@@ -54,6 +54,13 @@ export const TaskService = {
     const res = await HttpService.doPostRequest(`/task/create`, data?.data);
     return parseCommonHttpResult(res);
   },
+  async addSubTask(data: any) {
+    const res = await HttpService.doPutRequest(
+      `/task/create-subtask/${data?.id}`,
+      data?.data
+    );
+    return parseCommonHttpResult(res);
+  },
   async editItem(data: any) {
     const res = await HttpService.doPutRequest(
       `/task/update/${data?.id}`,

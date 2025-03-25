@@ -38,6 +38,10 @@ export const UserService = {
     const res = await HttpService.doPutRequest(`/user/profile`, data);
     return parseCommonHttpResult(res);
   },
+  async changeUserPassword(data: any) {
+    const res = await HttpService.doPutRequest(`/user/change-password`, data);
+    return parseCommonHttpResult(res);
+  },
   async activateUserProfile(data: any) {
     const res = await HttpService.doPutRequest(`/user/${data?.id}`, data?.data);
     return parseCommonHttpResult(res);

@@ -1,6 +1,6 @@
 import { useAppSelector } from "@/app/hooks"
 import { cn } from "@/lib/utils";
-import { BGS, formatDate, formatDateTime, PRIOTITYSTYELS, TASK_TYPE } from "@/utils/utils";
+import { BGS, formatDateTime, PRIOTITYSTYELS, TASK_TYPE } from "@/utils/utils";
 import { useState } from "react";
 import TaskDialog from "./TaskDialog";
 import { ICONS } from "@/utils/constant";
@@ -18,7 +18,7 @@ const TaskCard = ({ task, isDragging = false }: { task: taskProps, isDragging?: 
     const [open, setOpen] = useState(false);
     return (
         <>
-            <div className={cn("bg-white w-full h-fit p-4 rounded-md shadow-md box-shadow-card", isDragging && "ring-2 ring-blue-400")}>
+            <div className={cn("bg-white w-full h-[300px] p-4 rounded-md shadow-md box-shadow-card", isDragging && "ring-2 ring-blue-400")}>
                 <div className="flex justify-between w-full">
                     <div className={cn("flex flex-1 gap-1 items-center text-sm font-medium", PRIOTITYSTYELS[task.priority as keyof typeof PRIOTITYSTYELS])}>
                         <span className="text-lg">
@@ -32,7 +32,7 @@ const TaskCard = ({ task, isDragging = false }: { task: taskProps, isDragging?: 
                     <div className={cn("size-4 rounded-full", TASK_TYPE[task.stage as keyof typeof TASK_TYPE])} />
                     <h4 onClick={() => navigate(`/task/${task.id}`)} className="flex-1 text-black cursor-pointer hover:text-blue-700 line-clamp-1">{task.title}</h4>
                 </div>
-                <div className="pt-2 flex items-center justify-between">
+                <div className="pt-2 flex items-center gap-2">
                     <p className="text-gray-600 text-sm">Due date:</p>
                     <p className="text-gray-700 text-sm">{formatDateTime(new Date(task?.date || ""))}</p>
                 </div>
@@ -68,23 +68,31 @@ const TaskCard = ({ task, isDragging = false }: { task: taskProps, isDragging?: 
                 {
                     (task.subTasks || [])?.length > 0 ?
                         <div className="border-gray-200 border-t py-4">
-                            <h5 className="text-base text-black line-clamp-1">
-                                {(task.subTasks || [])[0].title}
-                            </h5>
-                            <div className="p-4 space-x-8">
-                                <span className="text-gray-600 text-sm">
-                                    {formatDate(new Date((task.subTasks || [])[0].date))}
-                                </span>
-                                <span className="bg-blue-600/10 rounded-full text-blue-700 font-medium px-3 py-1">
-                                    {(task.subTasks || [])[0].tag}
-                                </span>
+                            <div className="flex items-center gap-2">
+                                <h5 className="text-base text-black line-clamp-1">
+                                    {(task.subTasks || [])[0].title}
+                                </h5>
+                                {
+                                    (task.subTasks || [])[0].tag &&
+                                    <p className="bg-blue-600/10 rounded-full text-blue-700 font-medium px-3 py-1">
+                                        {(task.subTasks || [])[0].tag}
+                                    </p>
+                                }
+                                {
+                                    (task.subTasks || [])?.length > 1 &&
+                                    <span className="size-6 text-xs rounded-full bg-gray-200 flex items-center justify-center">+{(task.subTasks || [])?.length - 1}</span>
+                                }
+                            </div>
+                            <div className="pt-2 flex items-center gap-2">
+                                <p className="text-gray-600 text-sm">Due date:</p>
+                                <p className="text-gray-700 text-sm">{formatDateTime(new Date((task?.subTasks || [])[0].date || ""))}</p>
                             </div>
                         </div> :
                         <div className="border-gray-200 border-t py-4">
                             <span className="text-gray-500">No Sub Task</span>
                         </div>
                 }
-                <div className="w-full pb-2">
+                <div className="w-full">
                     <button
                         onClick={() => setOpen(true)}
                         disabled={!user.isAdmin}

@@ -7,12 +7,12 @@ import { FaUser, FaUserLock } from "react-icons/fa";
 import { IoLogOutOutline } from "react-icons/io5";
 import { AuthService } from "@/services/Auth.service";
 import { setLogined, setUser } from "@/slices/app.slice";
-import { MdSettings } from "react-icons/md";
 import { cn } from "@/lib/utils";
 import AddUser from "../Users/AddUser";
-import { changeAction, resetActionState, selectItem } from "@/slices/user.slice";
+import { changeAction, resetActionState, resetChangePassState, selectItem } from "@/slices/user.slice";
 import { toast } from "sonner";
 import { UserService } from "@/services/User.service";
+import ChangePassword from "../Users/ChangePassword";
 const UserAvatar = () => {
     const dispatch = useAppDispatch();
     const { user } = useAppSelector(state => state.app);
@@ -20,10 +20,8 @@ const UserAvatar = () => {
     const navigate = useNavigate();
     const [openProfile, setOpenProfile] = useState(false);
     const [openPassword, setOpenPassword] = useState(false);
-    const [openSetting, setOpenSetting] = useState(false);
     console.log({
         openPassword,
-        openSetting,
     });
 
     const logoutHandler = () => {
@@ -43,6 +41,23 @@ const UserAvatar = () => {
             case "completed":
                 dispatch(setUser(JSON.parse(localStorage.getItem("user") as string)));
                 dispatch(resetActionState());
+                toast.success(userState.success);
+                break;
+        }
+    }, [dispatch, userState])
+
+    useEffect(() => {
+        switch (userState.statusChangePass) {
+            case "failed":
+                toast.error(userState.error);
+                dispatch(resetChangePassState());
+                break;
+            case "loading":
+                break;
+            case "completed":
+                dispatch(resetChangePassState());
+                logoutHandler();
+                localStorage.removeItem("remember_password");
                 toast.success(userState.success);
                 break;
         }
@@ -88,17 +103,6 @@ const UserAvatar = () => {
                                 </button>
                             )}
                         </MenuItem>
-                        <MenuItem>
-                            {() => (
-                                <button
-                                    onClick={() => setOpenSetting(true)}
-                                    className={`tetx-gray-700 hover:bg-gray-100 group flex w-full items-center px-4 py-2 text-base`}
-                                >
-                                    <MdSettings className='mr-2' aria-hidden='true' />
-                                    Settings
-                                </button>
-                            )}
-                        </MenuItem>
                         <hr className="bg-gray-300 border-none h-[1px] w-full" />
                         <MenuItem>
                             {() => (
@@ -118,6 +122,10 @@ const UserAvatar = () => {
                 open={openProfile}
                 setOpen={setOpenProfile}
                 title="Update Profile"
+            />
+            <ChangePassword
+                open={openPassword}
+                setOpen={setOpenPassword}
             />
         </ >
     )

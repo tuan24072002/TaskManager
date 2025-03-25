@@ -36,6 +36,10 @@ export const addItem: any = commonCreateAsyncThunk({
   type: "task/addItem",
   action: TaskService.addItem,
 });
+export const addSubTask: any = commonCreateAsyncThunk({
+  type: "task/addSubTask",
+  action: TaskService.addSubTask,
+});
 export const editItem: any = commonCreateAsyncThunk({
   type: "task/editItem",
   action: TaskService.editItem,
@@ -135,6 +139,19 @@ export const taskSlice = createSlice({
         state.statusAction = "loading";
       })
       .addCase(addItem.rejected, (state, action) => {
+        const error = Object(action.payload);
+        state.statusAction = "failed";
+        state.error = errorMessage(error);
+      })
+      .addCase(addSubTask.fulfilled, (state, action) => {
+        state.success =
+          action.payload.data !== "" ? action.payload.data.message : "";
+        state.statusAction = "completed";
+      })
+      .addCase(addSubTask.pending, (state) => {
+        state.statusAction = "loading";
+      })
+      .addCase(addSubTask.rejected, (state, action) => {
         const error = Object(action.payload);
         state.statusAction = "failed";
         state.error = errorMessage(error);

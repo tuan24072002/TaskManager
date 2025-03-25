@@ -11,7 +11,7 @@ interface TabsProps {
 }
 const Tabs = ({ tabs, setSelected, children }: TabsProps) => {
     return (
-        <div className="h-full w-full px-1 sm:px-0">
+        <div className="h-full w-full px-1 sm:px-0 relative">
             <TabGroup as={Fragment}>
                 <TabList className="flex space-x-4 rounded-xl">
                     {

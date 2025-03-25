@@ -142,60 +142,6 @@ const AllTasks = ({ tasks: initialTasks }: { tasks: TaskModel[] }) => {
         // Kết thúc drag thì reset active task
         setActiveTask(null);
     };
-    // const handleDragEnd = async (event: DragEndEvent) => {
-    //     const { active, over } = event;
-
-    //     if (!over) {
-    //         setActiveTask(null);
-    //         return;
-    //     }
-
-    //     const activeId = active.id.toString();
-    //     const overId = over.id.toString();
-
-    //     // Biến để lưu trữ stage mới
-    //     let newStage: "todo" | "in progress" | "completed" | null = null;
-
-    //     // Xác định stage mới
-    //     if (["todo", "in progress", "completed"].includes(overId)) {
-    //         // Nếu kéo trực tiếp vào một column
-    //         newStage = overId as "todo" | "in progress" | "completed";
-    //     } else {
-    //         // Nếu kéo vào một task trong column
-    //         const overTask = tasks.find(t => t.id === overId);
-    //         if (overTask) {
-    //             newStage = overTask.stage;
-    //         }
-    //     }
-
-    //     // Nếu đã xác định được stage mới
-    //     if (newStage) {
-    //         // Tìm task và cập nhật stage
-    //         const taskIndex = tasks.findIndex((t) => t.id === activeId);
-    //         if (taskIndex !== -1) {
-    //             const updatedTask = { ...tasks[taskIndex], stage: newStage };
-    //             const newTasks = [...tasks];
-    //             newTasks[taskIndex] = updatedTask;
-    //             setTasks(newTasks);
-    //             const findTask: any = tasks.find((t) => t.id === activeId);
-    //             const payload = {
-    //                 id: activeId,
-    //                 data: {
-    //                     title: findTask.title,
-    //                     team: findTask.team,
-    //                     stage: newStage,
-    //                     priority: findTask.priority,
-    //                     date: findTask.date,
-    //                     description: findTask.description
-    //                 }
-    //             }
-    //             await dispatch(changStageItem(payload));
-    //         }
-    //     }
-
-    //     // Reset active states
-    //     setActiveTask(null);
-    // };
 
     return (
         width < 1024 ?
@@ -210,7 +156,7 @@ const AllTasks = ({ tasks: initialTasks }: { tasks: TaskModel[] }) => {
                 onDragOver={handleDragOver}
                 onDragEnd={handleDragEnd}
             >
-                <div className="w-full h-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 px-1">
+                <div className="w-full h-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 px-[1px]">
                     <TaskColumn id="todo" tasks={todoTasks} />
                     <TaskColumn id="in progress" tasks={inProgressTasks} />
                     <TaskColumn id="completed" tasks={completedTasks} />

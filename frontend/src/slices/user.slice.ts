@@ -9,6 +9,7 @@ interface UserState extends ActionSliceState {
   list: UserModel[];
   item: UserModel;
   loading: boolean;
+  statusChangePass: "idle" | "loading" | "completed" | "failed";
 }
 
 const initialState: UserState = {
@@ -18,6 +19,7 @@ const initialState: UserState = {
   status: "idle",
   statusAction: "idle",
   action: "INS",
+  statusChangePass: "idle",
 };
 
 export const fetchAllTeam: any = commonCreateAsyncThunk({
@@ -36,6 +38,10 @@ export const activateUserProfile: any = commonCreateAsyncThunk({
   type: "user/activateUserProfile",
   action: UserService.activateUserProfile,
 });
+export const changeUserPassword: any = commonCreateAsyncThunk({
+  type: "user/changeUserPassword",
+  action: UserService.changeUserPassword,
+});
 
 export const userSlice = createSlice({
   name: "user",
@@ -43,6 +49,9 @@ export const userSlice = createSlice({
   reducers: {
     selectItem: (state, action) => {
       state.item = action.payload;
+    },
+    resetChangePassState: (state) => {
+      state.statusChangePass = "idle";
     },
     resetActionState: (state) => {
       state.statusAction = "idle";
@@ -98,6 +107,19 @@ export const userSlice = createSlice({
         const error = Object(action.payload);
         state.error = errorMessage(error);
       })
+      .addCase(changeUserPassword.fulfilled, (state, action) => {
+        state.success =
+          action.payload.data != "" ? action.payload.data.message : "";
+        state.statusChangePass = "completed";
+      })
+      .addCase(changeUserPassword.pending, (state) => {
+        state.statusChangePass = "loading";
+      })
+      .addCase(changeUserPassword.rejected, (state, action) => {
+        state.statusChangePass = "failed";
+        const error = Object(action.payload);
+        state.error = errorMessage(error);
+      })
       .addCase(deleteUserProfile.fulfilled, (state, action) => {
         state.success =
           action.payload.data != "" ? action.payload.data.message : "";
@@ -132,5 +154,6 @@ export const {
   resetState,
   changeAction,
   setLoading,
+  resetChangePassState,
 } = userSlice.actions;
 export default userSlice.reducer;

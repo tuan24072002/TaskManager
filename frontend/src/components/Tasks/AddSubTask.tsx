@@ -3,25 +3,27 @@ import ModalWrapper from "../ModalWrapper";
 import { DialogTitle } from "@headlessui/react";
 import TextBox from "../TextBox";
 import Button from "../Button";
+import { useAppDispatch } from "@/app/hooks";
+import { addSubTask } from "@/slices/task.slice";
 
 const AddSubTask = ({ open, setOpen, id }: {
     open: boolean,
     setOpen: (e: boolean) => void,
     id: string
 }) => {
+    const dispatch = useAppDispatch();
     const { register, handleSubmit, formState: { errors } } = useForm();
-    const submitHandler = async () => {
-        // try {
-        //     const res = await AddSubTask({ data, id }).unwrap();
-        //     toast.success(res.message);
-        //     setTimeout(() => {
-        //         setOpen(false);
-        //     }, 500);
-        // } catch (error) {
-        //     console.log(error);
-        //     toast.error((error as Error).message);
-        // }
-        console.log(id);
+    const submitHandler = async (data: any) => {
+        const payload = {
+            id,
+            data: {
+                title: data.title,
+                date: data.date,
+                tag: data.tag
+            }
+        };
+        dispatch(addSubTask(payload));
+        setOpen(false);
     }
     return (
         <ModalWrapper
@@ -42,18 +44,20 @@ const AddSubTask = ({ open, setOpen, id }: {
                         register={register("title", {
                             required: "Title is required!",
                         })}
+                        required
                         error={errors ? String(errors.title?.message || "") : ""}
                     />
                     <div className="grid grid-cols-2 gap-4">
                         <TextBox
                             placeholder="Date"
-                            type="date"
+                            type="datetime-local"
                             name="date"
                             label="Task Date"
                             className="w-full rounded"
                             register={register("date", {
                                 required: "Date is required!"
                             })}
+                            required
                             error={errors.date ? String(errors.date.message) : ""}
                         />
                         <TextBox
@@ -62,9 +66,7 @@ const AddSubTask = ({ open, setOpen, id }: {
                             name="tag"
                             label="Tag"
                             className="w-full rounded"
-                            register={register("tag", {
-                                required: "Tag is required!",
-                            })}
+                            register={register("tag")}
                             error={errors ? String(errors.tag?.message || "") : ""}
                         />
                     </div>
