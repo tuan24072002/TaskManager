@@ -4,7 +4,8 @@ import User from "../models/user.model.js";
 import { formatDate } from "../utils/index.js";
 import { getIO } from "../lib/socket.js";
 import { uploadImage } from "../lib/localStorage.js";
-
+import { unlinkSync, existsSync, readdirSync, rmSync } from 'fs'
+import path from "path";
 export const createTask = async (req, res) => {
     try {
         const { userId } = req.user;
@@ -85,24 +86,57 @@ export const updateTask = async (req, res) => {
             team,
             stage,
             priority,
-            description
+            description,
+            existingAssets
         } = req.body;
         if (typeof team === "string") {
             team = JSON.parse(team);
+        }
+        if (existingAssets && typeof existingAssets === "string") {
+            existingAssets = JSON.parse(existingAssets);
         }
         const formatTeam = Array.isArray(team) && team.length > 0 && typeof team[0] === 'object'
             ? team.map(member => member.id || member._id)
             : team;
         const uploadedFiles = req.files || [];
+        let newAssets = uploadedFiles.length > 0 ? uploadImage(uploadedFiles) : [];
+        let finalAssets = existingAssets ? [...existingAssets, ...newAssets] : newAssets;
 
         const task = await Task.findById(id);
         if (isAdmin) {
+            if (task.assets && task.assets.length > 0) {
+                task.assets.forEach(oldAsset => {
+                    if (!finalAssets.includes(oldAsset)) {
+                        const absolutePath = path.join(process.cwd(), oldAsset);
+                        if (existsSync(absolutePath)) {
+                            try {
+                                unlinkSync(absolutePath);
+                                console.log(`Deleted file: ${absolutePath}`);
+                            } catch (err) {
+                                console.error(`Error deleting file ${absolutePath}:`, err);
+                            }
+                        }
+                        const dirPath = path.dirname(absolutePath);
+                        try {
+                            if (existsSync(dirPath)) {
+                                const files = readdirSync(dirPath);
+                                if (files.length === 0) {
+                                    rmSync(dirPath, { recursive: true, force: true });
+                                    console.log(`Deleted directory: ${dirPath}`);
+                                }
+                            }
+                        } catch (err) {
+                            console.error(`Error deleting directory ${dirPath}:`, err);
+                        }
+                    }
+                });
+            }
             task.title = title;
             task.date = date;
             task.team = formatTeam;
             task.stage = stage.toLowerCase();
             task.priority = priority?.toLowerCase();
-            task.assets = uploadedFiles.length > 0 ? uploadImage(uploadedFiles) : [];
+            task.assets = finalAssets;
             task.description = description;
         } else {
             task.stage = stage.toLowerCase();
