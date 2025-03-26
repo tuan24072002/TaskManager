@@ -5,8 +5,10 @@ import { Server as SocketServer } from "socket.io";
  * @param {http.Server} server - Instance của HTTP server được tạo từ Express.
  * @returns {SocketServer} Instance của Socket.io.
  */
+
+let io;
 export default function initSocket(server) {
-    const io = new SocketServer(server, {
+    io = new SocketServer(server, {
         cors: {
             origin: [process.env.FRONTEND_URL, "http://localhost:3000"],
             methods: ["GET", "POST"]
@@ -33,12 +35,12 @@ export default function initSocket(server) {
         const user = socket.data.user;
         if (user.isAdmin) {
             socket.join("AdminRoom");
+            socket.join(user._id);
         } else {
-            socket.join(socket.id);
+            socket.join(user._id);
             userRooms.set(user._id, { socketId: socket.id, user });
             sendUserListToAdmin();
         }
-
         // Typing
         socket.on('typing', (data) => {
             if (data.sender === "user" && data.receiver === "support") {
@@ -107,5 +109,11 @@ export default function initSocket(server) {
         });
     });
 
+    return io;
+}
+export function getIO() {
+    if (!io) {
+        throw new Error('Socket.io not initialized');
+    }
     return io;
 }

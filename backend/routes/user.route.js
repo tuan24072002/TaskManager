@@ -4,26 +4,21 @@ import {
     activateUserProfile,
     changeUserPassword,
     deleteUserProfile,
-    getNotificationsList,
     getTeamList,
     loginUser,
-    markNotificationRead,
     refreshToken,
     registerUser,
     updateUserProfile
 } from "../controllers/user.controller.js";
 
 const router = express.Router();
-
 //PUBLIC-ROUTES
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 
 //PRIVATE-ROUTES
 router.post("/refresh", refreshToken);
-router.get("/notifications", protectRoute, getNotificationsList);
 router.put("/profile", protectRoute, updateUserProfile);
-router.put("/read-noti", protectRoute, markNotificationRead);
 router.put("/change-password", protectRoute, changeUserPassword);
 
 // //ADMIN-ROUTES

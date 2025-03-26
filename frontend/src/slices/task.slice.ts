@@ -68,6 +68,11 @@ export const restoreAllItem: any = commonCreateAsyncThunk({
   type: "task/restoreAllItem",
   action: TaskService.restoreAllItem,
 });
+export const postTaskActivity: any = commonCreateAsyncThunk({
+  type: "task/postTaskActivity",
+  action: TaskService.postTaskActivity,
+});
+
 export const taskSlice = createSlice({
   name: "task",
   initialState,
@@ -247,6 +252,19 @@ export const taskSlice = createSlice({
         state.statusAction = "loading";
       })
       .addCase(restoreItem.rejected, (state, action) => {
+        const error = Object(action.payload);
+        state.statusAction = "failed";
+        state.error = errorMessage(error);
+      })
+      .addCase(postTaskActivity.fulfilled, (state, action) => {
+        state.success =
+          action.payload.data !== "" ? action.payload.data.message : "";
+        state.statusAction = "completed";
+      })
+      .addCase(postTaskActivity.pending, (state) => {
+        state.statusAction = "loading";
+      })
+      .addCase(postTaskActivity.rejected, (state, action) => {
         const error = Object(action.payload);
         state.statusAction = "failed";
         state.error = errorMessage(error);

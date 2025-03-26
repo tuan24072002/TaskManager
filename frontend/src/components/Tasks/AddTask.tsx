@@ -11,6 +11,7 @@ import Button from "../Button"
 import { useAppDispatch, useAppSelector } from "@/app/hooks"
 import { addItem, editItem } from "@/slices/task.slice"
 import { cn } from "@/lib/utils"
+import { IoMdClose } from "react-icons/io"
 
 const AddTask = ({ open, setOpen, task }: {
     open: boolean,
@@ -34,7 +35,8 @@ const AddTask = ({ open, setOpen, task }: {
     const [team, setTeam] = useState<userProps[]>(task?.team || []);
     const [stage, setStage] = useState<stageProps>("todo");
     const [priority, setPriority] = useState<priorityProps>(task?.priority as priorityProps || PRIORIRY[2])
-    const [assets, setAssets] = useState([]);
+    const [assets, setAssets] = useState<File[]>([]);
+    const [assetsBase64, setAssetsBase64] = useState<string[]>(task?.assets || []);
     const [uploading] = useState(false);
 
     const {
@@ -51,31 +53,39 @@ const AddTask = ({ open, setOpen, task }: {
             setError("team", { message: "Assignment is required" });
             return;
         }
-        const payload = {
-            id: data.id,
-            data: {
-                title: data.title,
-                team: data.team,
-                stage: data.stage,
-                priority: data.priority,
-                date: data.date,
-                description: data.description
-            }
-        }
+        const formData = new FormData();
+        formData.append('id', task?.id || "");
+        formData.append('title', data.title);
+        formData.append('team', JSON.stringify(data.team));
+        formData.append('stage', data.stage);
+        formData.append('priority', data.priority);
+        formData.append('date', data.date);
+        formData.append('description', data.description);
+        assets.forEach(file => {
+            formData.append('file', file);
+        });
         switch (taskState.action) {
             case "INS":
-                dispatch(addItem(payload));
+                dispatch(addItem(formData));
                 break;
             case "UPD":
-                dispatch(editItem(payload));
+                dispatch(editItem({ id: task?.id, formData: formData }));
                 break;
         }
         setOpen(false);
     }
     const handleSelect = (e: any) => {
-        setAssets(e.target.files);
+        setAssets([...assets, e.target.files[0]]);
+        const reader = new FileReader();
+        reader.onload = () => {
+            setAssetsBase64([...assetsBase64, reader.result as string]);
+        };
+        reader.readAsDataURL(e.target.files[0]);
     };
-
+    const handleRemoveAsset = (index: number) => {
+        setAssets(assets.filter((_, i) => i !== index));
+        setAssetsBase64(assetsBase64.filter((_, i) => i !== index));
+    }
     useEffect(() => {
         if (taskState?.stage && !task) {
             setStage(taskState.stage)
@@ -110,9 +120,8 @@ const AddTask = ({ open, setOpen, task }: {
         setValue("team", team);
         setValue("stage", stage);
         setValue("priority", priority);
-        setValue("assets", assets);
         setValue("date", formattedDate);
-    }, [team, stage, priority, assets, setValue, task]);
+    }, [team, stage, priority, setValue, task]);
 
     useEffect(() => {
         if (team.length > 0) {
@@ -184,9 +193,9 @@ const AddTask = ({ open, setOpen, task }: {
                             disabled={!user.isAdmin}
                             required
                         />
-                        <div className='flex justify-center w-full items-center mt-4'>
+                        <div className='flex flex-col justify-center w-full mt-7 gap-4'>
                             <label
-                                className={cn('flex border border-gray-300 rounded text-base gap-1 hover:text-ascent-1 items-center max-h-[46px] mt-auto px-2 size-full', !user.isAdmin ? "bg-gray-100 cursor-not-allowed" : "cursor-pointer")}
+                                className={cn('flex min-h-[42px] border border-gray-300 rounded text-base gap-1 hover:text-ascent-1 items-center max-h-[46px] mt-auto px-2 size-full', !user.isAdmin ? "bg-gray-100 cursor-not-allowed" : "cursor-pointer")}
                                 htmlFor='imgUpload'
                             >
                                 <input
@@ -201,6 +210,22 @@ const AddTask = ({ open, setOpen, task }: {
                                 <BiImages />
                                 <span>Add Assets</span>
                             </label>
+                            <div className="flex-1 flex items-center gap-2">
+                                {
+                                    assetsBase64.length > 0 && assetsBase64.map((item, index) => (
+                                        <div className="relative" key={`assets ${index}`}>
+                                            <img
+                                                className='size-10'
+                                                src={item.split("/")[1] === "uploads" ? import.meta.env.VITE_APP_baseApiURL + "/" + item : item}
+                                                alt={`assets-${index}`}
+                                            />
+                                            <IoMdClose
+                                                onClick={() => handleRemoveAsset(index)}
+                                                className="absolute -top-2 -right-2 cursor-pointer rounded-full bg-white text-red-500 text-sm border" />
+                                        </div>
+                                    ))
+                                }
+                            </div>
                         </div>
                     </div>
                     <div className="flex flex-col gap-1 w-full">

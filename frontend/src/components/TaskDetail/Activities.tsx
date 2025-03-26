@@ -5,14 +5,32 @@ import Loader from "../Loader";
 import Button from "../Button";
 import { FaPlus } from "react-icons/fa";
 import { cn } from "@/lib/utils";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { postTaskActivity } from "@/slices/task.slice";
+import { toast } from "sonner";
 
 const Activities = ({ activity, id }: { activity: activitiesProps[], id: string }) => {
+    const dispatch = useAppDispatch();
+    const taskState = useAppSelector(state => state.task);
     const [selected, setSelected] = useState<string[] | string>(act_types);
     const [text, setText] = useState("");
     const [isAddActivity, setIsAddActivity] = useState(false);
-    const isLoading = false;
+
     const handleSubmit = async () => {
-        console.log(id);
+        if (!selected || !text) {
+            toast.error("Please fill all the fields!");
+            return;
+        }
+        const payload = {
+            id: id,
+            data: {
+                type: selected,
+                activity: text
+            }
+        }
+        await dispatch(postTaskActivity(payload));
+        setText("");
+        setSelected("");
     };
     return (
         <>
@@ -27,7 +45,7 @@ const Activities = ({ activity, id }: { activity: activitiesProps[], id: string 
             )}>
                 <div className={cn(
                     "flex-1 max-h-[calc(100vh-214px)] bg-white rounded-md shadow px-10 py-8 overflow-y-auto overflow-x-hidden")}>
-                    <div className="w-full">
+                    <div className="w-full flex flex-col gap-y-4">
                         {
                             activity.map((act, index) => {
                                 return (
@@ -44,7 +62,7 @@ const Activities = ({ activity, id }: { activity: activitiesProps[], id: string 
                     "bg-white rounded-md shadow transition-all duration-500",
                     isAddActivity ? "w-1/3 px-10 py-8" : "w-0 p-0"
                 )}>
-                    <h4 className='text-gray-600 text-lg font-semibold mb-5'>
+                    <h4 className='text-gray-600 text-base font-bold mb-5 uppercase'>
                         Add Activity
                     </h4>
                     <div className='flex flex-wrap w-full gap-5'>
@@ -66,7 +84,7 @@ const Activities = ({ activity, id }: { activity: activitiesProps[], id: string 
                             placeholder='Type ......'
                             className='bg-white border border-gray-300 p-4 rounded-md w-full focus:ring-2 mt-10 outline-none resize-none ring-blue-500'
                         ></textarea>
-                        {isLoading ? (
+                        {taskState.loading ? (
                             <Loader />
                         ) : (
                             <Button

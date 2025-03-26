@@ -26,7 +26,6 @@ const Tasks = () => {
     const [selected, setSelected] = useState(0);
     const [open, setOpen] = useState(false);
     const { status } = params;
-
     useEffect(() => {
         switch (taskState.statusAction) {
             case "failed":
@@ -74,7 +73,7 @@ const Tasks = () => {
         taskState.status === "loading" ?
             <Loader /> :
             (
-                taskState.list.length === 0 ?
+                taskState.list.length === 0 && status !== undefined ?
                     <EmptyList /> :
                     <div className="size-full flex flex-col overflow-hidden">
                         <div className="flex justify-between items-center mb-2">

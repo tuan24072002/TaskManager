@@ -1,4 +1,3 @@
-import Notification from "../models/notification.model.js";
 import User from "../models/user.model.js";
 import { createAccessToken, createRefreshToken } from "../utils/index.js";
 import jwt from "jsonwebtoken";
@@ -41,7 +40,6 @@ export const registerUser = async (req, res) => {
         })
     }
 }
-
 export const loginUser = async (req, res) => {
     try {
         setTimeout(async () => {
@@ -90,7 +88,6 @@ export const loginUser = async (req, res) => {
         })
     }
 }
-
 export const refreshToken = async (req, res) => {
     try {
         const { refreshToken } = req.body;
@@ -149,7 +146,6 @@ export const refreshToken = async (req, res) => {
         })
     }
 }
-
 export const getTeamList = async (req, res) => {
     try {
         const users = await User.find().select("name title role email isActive createdAt");
@@ -165,25 +161,6 @@ export const getTeamList = async (req, res) => {
         })
     }
 }
-
-export const getNotificationsList = async (req, res) => {
-    try {
-        const { userId } = req.user;
-
-        const notice = await Notification.find({
-            team: { $in: [userId] },
-            isRead: { $nin: [userId] },
-        }).populate("task", "title");
-
-        res.status(201).json(notice);
-    } catch (error) {
-        return res.status(400).json({
-            success: false,
-            message: error.message
-        })
-    }
-}
-
 export const updateUserProfile = async (req, res) => {
     try {
         const { userId, isAdmin } = req.user;
@@ -219,37 +196,6 @@ export const updateUserProfile = async (req, res) => {
         })
     }
 }
-
-export const markNotificationRead = async (req, res) => {
-    try {
-        const { userId } = req.user;
-        const { isReadType, id } = req.body;
-
-        if (isReadType === "all") {
-            await Notification.updateMany(
-                { team: userId, isRead: { $nid: [userId] } },
-                { $push: { isRead: userId } },
-                { new: true }
-            )
-        } else {
-            await Notification.findOneAndUpdate(
-                { _id: id, isRead: { $nin: [userId] } },
-                { $push: { isRead: userId } },
-                { new: true }
-            )
-        }
-        return res.status(201).json({
-            success: true,
-            message: "Done"
-        })
-    } catch (error) {
-        return res.status(400).json({
-            success: false,
-            message: error.message
-        })
-    }
-}
-
 export const changeUserPassword = async (req, res) => {
     try {
         const { userId } = req.user;
@@ -278,7 +224,6 @@ export const changeUserPassword = async (req, res) => {
         })
     }
 }
-
 export const activateUserProfile = async (req, res) => {
     try {
         const { id } = req.params;
@@ -303,7 +248,6 @@ export const activateUserProfile = async (req, res) => {
         })
     }
 }
-
 export const deleteUserProfile = async (req, res) => {
     try {
         const { id } = req.params;

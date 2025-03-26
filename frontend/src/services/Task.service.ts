@@ -51,7 +51,7 @@ export const TaskService = {
     return parseCommonHttpResult(res);
   },
   async addItem(data: any) {
-    const res = await HttpService.doPostRequest(`/task/create`, data?.data);
+    const res = await HttpService.doUploadPostRequest(`/task/create`, data);
     return parseCommonHttpResult(res);
   },
   async addSubTask(data: any) {
@@ -62,9 +62,9 @@ export const TaskService = {
     return parseCommonHttpResult(res);
   },
   async editItem(data: any) {
-    const res = await HttpService.doPutRequest(
+    const res = await HttpService.doUploadPutRequest(
       `/task/update/${data?.id}`,
-      data?.data
+      data?.formData
     );
     return parseCommonHttpResult(res);
   },
@@ -75,6 +75,14 @@ export const TaskService = {
     );
     return parseCommonHttpResult(res);
   },
+  async postTaskActivity(data: any) {
+    const res = await HttpService.doPostRequest(
+      `/task/activity/${data?.id}`,
+      data?.data
+    );
+    return parseCommonHttpResult(res);
+  },
+
   async deleteItem(data: any) {
     const res = await HttpService.doDeleteRequest(
       `/task/delete-restore/${data?.id}?actionType=delete`,

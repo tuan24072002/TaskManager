@@ -20,9 +20,6 @@ const UserAvatar = () => {
     const navigate = useNavigate();
     const [openProfile, setOpenProfile] = useState(false);
     const [openPassword, setOpenPassword] = useState(false);
-    console.log({
-        openPassword,
-    });
 
     const logoutHandler = () => {
         dispatch(setLogined(false));

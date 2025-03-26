@@ -8,6 +8,7 @@ import { errorHandler, routeNotFound } from "./middlewares/error.middleware.js";
 import routes from "./routes/index.js";
 import http from "http";
 import initSocket from "./lib/socket.js";
+import path from "path";
 
 connectDB();
 const PORT = process.env.PORT || 5000;
@@ -22,7 +23,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan("dev"));
 app.use("/api", routes);
-
+const __dirname = path.resolve()
+app.use("/uploads/files", express.static(`${__dirname}/uploads/files`))
 app.use(routeNotFound);
 app.use(errorHandler);
 

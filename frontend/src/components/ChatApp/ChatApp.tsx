@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react';
 import ChatBox from './ChatBox';
-import io, { Socket } from 'socket.io-client';
 import { FiMessageCircle } from "react-icons/fi";
 import { cn } from '@/lib/utils';
 import model from '@/lib/gemini';
 import { toast } from 'sonner';
 import { useAppSelector } from '@/app/hooks';
+import { useSocket } from '@/context/SocketContext';
 
 const ChatApp = () => {
     const { user } = useAppSelector(state => state.app);
     const chatState = useAppSelector(state => state.chat);
-    const [socket, setSocket] = useState<Socket | null>(null);
     const [isShowMessage, setIsShowMessage] = useState(false);
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
     const [message, setMessage] = useState("");
@@ -22,6 +21,7 @@ const ChatApp = () => {
         sender: null,
         userId: null
     });
+    const { socket } = useSocket();
     const prePrompt = `
     Bạn là trợ lý thông minh ngẫu nhiên lúc là nam lúc là nữ, chuyên tư vấn về quản lý công việc cho trang web **TaskMe**.
     Khi trả lời, hãy:
@@ -37,28 +37,6 @@ const ChatApp = () => {
     - In Progress: Hiển thị các công việc đang tiến hành theo board view / list view.
     - Todo: Hiển thị các công việc cần làm theo board view / list view.
     `;
-
-    //Trapboy AI
-    //     const prePrompt = `
-    // Bạn là một trợ lý thông minh, trapboy, fuckboy, thích nói những lời mật ngọt tán tĩnh.
-    // Khi trả lời hãy:
-    //  - Kết hợp những câu từ mất dạy, vô văn hóa, thiếu giáo dục, tục tiểu vào câu văn ngắn gọn (tối đa 50 từ)
-    //  - Không ngừng nói ra những lời tán tĩnh, cua những cô gái đang nói chuyện với bạn.
-    //  - Luôn thèm muốn tình dục, gạ gẫm để được lên giường
-    //  - Dùng những từ vào thẳng vấn đề gạ gẫm như là địt nhau, đụ nhau, làm tình,...
-    //  - Nói chuyện như 1 người miền nam chính hiệu, đừng như trai bắc nhé
-    //     `;
-
-    //Nữ dâm đãng
-    //     const prePrompt = `
-    // Bạn là một trợ lý nữ thông minh, dâm đảng.
-    // Khi trả lời hãy:
-    //  - Kết hợp những câu từ mất dạy, vô văn hóa, thiếu giáo dục, tục tiểu vào câu văn ngắn gọn (tối đa 50 từ)
-    //  - Không ngừng nói ra những lời tán tĩnh, cưa cẫm người đang nói chuyện với bạn.
-    //  - Luôn thèm muốn tình dục, gạ gẫm để được lên giường
-    //  - Dùng những từ vào thẳng vấn đề gạ gẫm như là địt nhau, đụ nhau, làm tình,...
-    //  - Nói chuyện như 1 gái bắc
-    //     `;
     const handleTyping = () => {
         socket?.emit("typing", {
             sender: user.isAdmin ? "support" : "user",
@@ -74,13 +52,6 @@ const ChatApp = () => {
             userId: user.isAdmin ? selectedUserId : user._id
         });
     };
-    useEffect(() => {
-        const newSocket = io(import.meta.env.VITE_APP_baseApiURL, {
-            auth: { user }
-        });
-        setSocket(newSocket);
-        return () => { newSocket.disconnect(); };
-    }, [user]);
     useEffect(() => {
         if (!socket) return;
         socket.on("userTyping", (data) => {

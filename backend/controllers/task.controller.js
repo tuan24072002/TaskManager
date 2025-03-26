@@ -2,11 +2,16 @@ import Task from "../models/task.model.js"
 import Notification from "../models/notification.model.js"
 import User from "../models/user.model.js";
 import { formatDate } from "../utils/index.js";
+import { getIO } from "../lib/socket.js";
+import { uploadImage } from "../lib/localStorage.js";
 
 export const createTask = async (req, res) => {
     try {
         const { userId } = req.user;
-        const { title, team, stage, date, priority, assets, description } = req.body;
+        let { title, team, stage, date, priority, description } = req.body;
+        if (typeof team === "string") {
+            team = JSON.parse(team);
+        }
 
         let text = `New task has been assigned to you`;
         if (team?.length > 1) {
@@ -20,13 +25,15 @@ export const createTask = async (req, res) => {
             ? team.map(member => member.id)
             : team;
 
+        const uploadedFiles = req.files || [];
+
         const task = await Task.create({
             title,
             team: formatTeam,
             stage: stage.toLowerCase(),
             date,
             priority: priority.toLowerCase(),
-            assets,
+            assets: uploadedFiles.length > 0 ? uploadImage(uploadedFiles) : [],
             activities: [
                 {
                     type: "assigned",
@@ -37,18 +44,75 @@ export const createTask = async (req, res) => {
             description
         });
 
-        await Notification.create({
+        const notification = await Notification.create({
             team: formatTeam,
             text,
             task: task._id
         });
+        const io = getIO();
+        const unreadMembers = formatTeam.filter(memberId =>
+            !notification.isRead || !notification.isRead.includes(memberId)
+        );
 
+        unreadMembers.forEach(memberId => {
+            try {
+                io.to(memberId).emit('new-task', {
+                    taskId: task._id,
+                    message: text
+                });
+            } catch (error) {
+                console.error(`Error emitting to ${memberId}:`, error);
+            }
+        });
         return res.status(200).json({
             success: true,
             message: "Task created successfully."
         })
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message
+        })
+    }
+}
+export const updateTask = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { isAdmin } = req.user;
+        let {
+            title,
+            date,
+            team,
+            stage,
+            priority,
+            description
+        } = req.body;
+        if (typeof team === "string") {
+            team = JSON.parse(team);
+        }
+        const formatTeam = Array.isArray(team) && team.length > 0 && typeof team[0] === 'object'
+            ? team.map(member => member.id || member._id)
+            : team;
+        const uploadedFiles = req.files || [];
 
+        const task = await Task.findById(id);
+        if (isAdmin) {
+            task.title = title;
+            task.date = date;
+            task.team = formatTeam;
+            task.stage = stage.toLowerCase();
+            task.priority = priority?.toLowerCase();
+            task.assets = uploadedFiles.length > 0 ? uploadImage(uploadedFiles) : [];
+            task.description = description;
+        } else {
+            task.stage = stage.toLowerCase();
+        }
+        await task.save();
 
+        res.status(200).json({
+            success: true,
+            message: "Task updated successfully."
+        });
     } catch (error) {
         return res.status(400).json({
             success: false,
@@ -101,11 +165,11 @@ export const postTaskActivity = async (req, res) => {
 
         const task = await Task.findById(id);
         const data = {
-            type,
+            type: type.toLowerCase(),
             activity,
             by: userId
         }
-        task.activities = data;
+        task.activities = [...task.activities, data];
         await task.save();
         res.status(200).json({
             success: true,
@@ -218,7 +282,6 @@ export const getTasks = async (req, res) => {
 export const getTask = async (req, res) => {
     try {
         const { id } = req.params;
-
         const task = await Task.findById(id)
             .populate({
                 path: "team",
@@ -227,8 +290,12 @@ export const getTask = async (req, res) => {
             .populate({
                 path: "activities.by",
                 select: "name",
-            })
-            .sort({ _id: -1 });
+            });
+
+        if (task && task.activities) {
+            task.activities.sort((a, b) => new Date(b.date) - new Date(a.date));
+        }
+
 
         res.status(200).json({
             success: true,
@@ -267,48 +334,7 @@ export const createSubTask = async (req, res) => {
         })
     }
 }
-export const updateTask = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { isAdmin } = req.user;
-        const {
-            title,
-            date,
-            team,
-            stage,
-            priority,
-            assets,
-            description
-        } = req.body;
-        const formatTeam = Array.isArray(team) && team.length > 0 && typeof team[0] === 'object'
-            ? team.map(member => member.id || member._id)
-            : team;
 
-        const task = await Task.findById(id);
-        if (isAdmin) {
-            task.title = title;
-            task.date = date;
-            task.team = formatTeam;
-            task.stage = stage.toLowerCase();
-            task.priority = priority?.toLowerCase();
-            task.assets = assets;
-            task.description = description;
-        } else {
-            task.stage = stage.toLowerCase();
-        }
-        await task.save();
-
-        res.status(200).json({
-            success: true,
-            message: "Task updated successfully."
-        });
-    } catch (error) {
-        return res.status(400).json({
-            success: false,
-            message: error.message
-        })
-    }
-}
 export const trashTask = async (req, res) => {
     try {
         const { id } = req.params;

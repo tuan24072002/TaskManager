@@ -9,33 +9,33 @@ export const ICONS = {
 };
 export const TASKTYPEICON = {
     commented: (
-        <div className='size-10 rounded-full bg-gray-500 flex items-center justify-center text-white'>
-            <MdOutlineMessage />,
+        <div className='size-10 rounded-full bg-blue-600 flex items-center justify-center shadow text-white'>
+            <MdOutlineMessage size={24} />
         </div>
     ),
     started: (
-        <div className='size-10 rounded-full bg-blue-600 flex items-center justify-center text-white'>
-            <FaThumbsUp size={20} />
+        <div className='size-10 rounded-full bg-blue-600 flex items-center justify-center shadow text-white'>
+            <FaThumbsUp size={24} />
         </div>
     ),
     assigned: (
-        <div className='size-6 flex items-center justify-center rounded-full bg-gray-500 text-white'>
-            <FaUser size={14} />
+        <div className='size-10 flex items-center justify-center rounded-full shadow bg-gray-500 text-white'>
+            <FaUser size={24} />
         </div>
     ),
     bug: (
-        <div className='text-red-600'>
+        <div className='size-10 flex items-center justify-center rounded-full border shadow bg-white text-red-500'>
             <FaBug size={24} />
         </div>
     ),
     completed: (
-        <div className='size-10 rounded-full bg-green-600 flex items-center justify-center text-white'>
+        <div className='size-10 rounded-full bg-green-600 flex items-center justify-center shadow text-white'>
             <MdOutlineDoneAll size={24} />
         </div>
     ),
     "in progress": (
-        <div className='size-8 flex items-center justify-center rounded-full bg-violet-600 text-white'>
-            <GrInProgress size={16} />
+        <div className='size-10 flex items-center justify-center rounded-full bg-violet-600 shadow text-white'>
+            <GrInProgress size={24} />
         </div>
     ),
 };

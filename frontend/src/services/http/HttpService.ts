@@ -114,10 +114,17 @@ class HttpService {
     //const response= HttpService.instance.post(url, params)
     return result;
   }
-  static async doUploadRequest(url: string, data: any) {
+  static async doUploadPostRequest(url: string, data: any) {
     delete HttpService.instance.defaults.headers["Content-Type"];
     delete HttpService.instance.defaults.headers["Accept"];
     return HttpService.instance.post(url, data, {
+      headers: { "Content-Type": "multipart/form-data", Accept: "*/*" },
+    });
+  }
+  static async doUploadPutRequest(url: string, data: any) {
+    delete HttpService.instance.defaults.headers["Content-Type"];
+    delete HttpService.instance.defaults.headers["Accept"];
+    return HttpService.instance.put(url, data, {
       headers: { "Content-Type": "multipart/form-data", Accept: "*/*" },
     });
   }

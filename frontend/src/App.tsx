@@ -3,6 +3,8 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import { Layout } from './Layout'
 import { HttpService } from './services/http/HttpService'
+import { useAppSelector } from './app/hooks'
+import { SocketProvider } from './context/SocketContext'
 
 const Login = React.lazy(() => import("@/pages/Login"));
 const Dashboard = React.lazy(() => import("@/pages/Dashboard"));
@@ -65,20 +67,23 @@ const pageList = [
 ]
 
 function App() {
+  const { user } = useAppSelector(state => state.app);
   HttpService.initialize();
   return (
-    <BrowserRouter>
-      <main className="w-full h-screen overflow-hidden bg-background">
-        <Routes>
-          {
-            pageList.map((page) => (
-              <Route key={page.path} path={page.path} element={page.element} />
-            ))
-          }
-        </Routes>
-      </main>
-      <Toaster richColors />
-    </BrowserRouter>
+    <SocketProvider user={user}>
+      <BrowserRouter>
+        <main className="w-full h-screen overflow-hidden bg-background">
+          <Routes>
+            {
+              pageList.map((page) => (
+                <Route key={page.path} path={page.path} element={page.element} />
+              ))
+            }
+          </Routes>
+        </main>
+        <Toaster richColors />
+      </BrowserRouter>
+    </SocketProvider>
   )
 }
 

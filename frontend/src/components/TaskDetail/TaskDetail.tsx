@@ -6,7 +6,6 @@ import { MdTaskAlt } from "react-icons/md"
 import AddSubTask from "../Tasks/AddSubTask"
 import { IoMdAdd } from "react-icons/io"
 import { useAppSelector } from "@/app/hooks"
-import Assets from "@/assets"
 import useWindowSize from "@/app/screen"
 
 
@@ -17,7 +16,7 @@ const TaskDetail = ({ task }: { task: taskProps }) => {
     return (
         <>
             <div
-                style={{ maxHeight: height - 214 }}
+                style={{ maxHeight: height - 214, minHeight: height - 214 }}
                 className="w-full bg-white overflow-y-auto overflow-x-hidden flex md:flex-row flex-col gap-10 shadow-md rounded-md p-4">
                 <div className="w-full h-full md:w-1/2">
                     <div className="flex items-center gap-5">
@@ -116,11 +115,19 @@ const TaskDetail = ({ task }: { task: taskProps }) => {
                 <div className="w-full md:w-1/2 space-y-8">
                     <p className="text-lg font-semibold">ASSETS</p>
                     <div className="w-full grid grid-cols-2 gap-4">
-                        <img
-                            src={Assets.Images.SreenError}
-                            alt={task?.title}
-                            className="w-full rounded h-28 md:h-36 2xl:h-52 cursor-pointer transition-all duration-700 hover:scale-125 hover:z-50"
-                        />
+                        {
+                            (task.assets || [])?.length > 0 &&
+                            task.assets?.map((item, index) => {
+                                return (
+                                    <img
+                                        key={`Asset map: ${index}`}
+                                        src={import.meta.env.VITE_APP_baseApiURL + "/" + item}
+                                        alt={task?.title}
+                                        className="w-full rounded h-32 md:h-36 2xl:h-52 object-fit-contain cursor-pointer transition-all duration-700 hover:scale-125 hover:z-50"
+                                    />
+                                )
+                            })
+                        }
                     </div>
                 </div>
             </div>

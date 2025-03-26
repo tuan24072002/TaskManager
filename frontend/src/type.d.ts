@@ -146,3 +146,4 @@ type TypingInfoProps = {
   sender: SenderProps | null;
   userId: string | null;
 };
+type notiTypeProps = "alert" | "message";
