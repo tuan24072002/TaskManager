@@ -48,7 +48,7 @@ const Sidebar = () => {
         )
     }
     return (
-        <div className="flex flex-col w-full h-screen">
+        <div className="flex flex-col w-full min-h-screen">
             <Link to={'/'} className="flex p-5 w-fit gap-1 items-center mx-auto xs:mx-0">
                 <p className="bg-gradient-to-t p-2 rounded-full from-highlight to-blue-700">
                     <MdOutlineAddTask className="text-2xl text-white font-black" />

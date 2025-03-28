@@ -116,8 +116,8 @@ const TaskDetail = ({ task }: { task: taskProps }) => {
                     <p className="text-lg font-semibold">ASSETS</p>
                     <div className="w-full grid grid-cols-2 gap-4">
                         {
-                            (task.assets || [])?.length > 0 &&
-                            task.assets?.map((item, index) => {
+                            (task?.assets || [])?.length > 0 &&
+                            task?.assets?.map((item, index) => {
                                 return (
                                     <img
                                         key={`Asset map: ${index}`}

@@ -27,7 +27,6 @@ const AllTasks = ({ tasks: initialTasks }: { tasks: TaskModel[] }) => {
     const dispatch = useAppDispatch();
     const [tasks, setTasks] = useState<TaskModel[]>(initialTasks);
     const [activeTask, setActiveTask] = useState<TaskModel | null>(null);
-
     // Nhóm các task theo stage
     const todoTasks = tasks.filter((task) => task.stage === "todo");
     const inProgressTasks = tasks.filter((task) => task.stage === "in progress");
@@ -124,18 +123,16 @@ const AllTasks = ({ tasks: initialTasks }: { tasks: TaskModel[] }) => {
                 newTasks[taskIndex] = updatedTask;
                 setTasks(newTasks);
                 const findTask: any = tasks.find((t) => t.id === activeId);
-                const payload = {
-                    id: activeId,
-                    data: {
-                        title: findTask.title,
-                        team: findTask.team,
-                        stage: newStage,
-                        priority: findTask.priority,
-                        date: findTask.date,
-                        description: findTask.description
-                    }
-                }
-                await dispatch(changStageItem(payload));
+                const formData = new FormData();
+                formData.append('id', findTask?.id || "");
+                formData.append('title', findTask.title);
+                formData.append('team', JSON.stringify(findTask.team));
+                formData.append('stage', newStage);
+                formData.append('priority', findTask.priority);
+                formData.append('date', findTask.date);
+                formData.append('description', findTask.description);
+                formData.append('existingAssets', JSON.stringify(findTask.assets));
+                await dispatch(changStageItem({ id: activeId, formData: formData }));
             }
         }
 

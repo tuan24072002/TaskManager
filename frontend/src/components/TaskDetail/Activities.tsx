@@ -59,7 +59,7 @@ const Activities = ({ activity, id }: { activity: activitiesProps[], id: string 
                     </div>
                 </div>
                 <div className={cn(
-                    "bg-white rounded-md shadow transition-all duration-500",
+                    "bg-white rounded-md shadow transition-all duration-500 max-h-[calc(100vh-214px)] overflow-y-auto",
                     isAddActivity ? "w-1/3 px-10 py-8" : "w-0 p-0"
                 )}>
                     <h4 className='text-gray-600 text-base font-bold mb-5 uppercase'>
