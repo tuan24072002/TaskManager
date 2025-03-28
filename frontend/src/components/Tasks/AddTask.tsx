@@ -61,6 +61,8 @@ const AddTask = ({ open, setOpen, task }: {
         formData.append('priority', data.priority);
         formData.append('date', data.date);
         formData.append('description', data.description);
+        const existingAssets = task?.assets ? assetsBase64.slice(0, task.assets.length) : [];
+        formData.append('existingAssets', JSON.stringify(existingAssets));
         assets.forEach(file => {
             formData.append('file', file);
         });
@@ -83,8 +85,14 @@ const AddTask = ({ open, setOpen, task }: {
         reader.readAsDataURL(e.target.files[0]);
     };
     const handleRemoveAsset = (index: number) => {
-        setAssets(assets.filter((_, i) => i !== index));
-        setAssetsBase64(assetsBase64.filter((_, i) => i !== index));
+        const existingCount = task?.assets?.length || 0;
+        if (index < existingCount) {
+            setAssetsBase64(prev => prev.filter((_, i) => i !== index));
+        } else {
+            const newIndex = index - existingCount;
+            setAssets(prev => prev.filter((_, i) => i !== newIndex));
+            setAssetsBase64(prev => prev.filter((_, i) => i !== index));
+        }
     }
     useEffect(() => {
         if (taskState?.stage && !task) {
@@ -212,18 +220,20 @@ const AddTask = ({ open, setOpen, task }: {
                             </label>
                             <div className="flex-1 flex items-center gap-2">
                                 {
-                                    assetsBase64.length > 0 && assetsBase64.map((item, index) => (
-                                        <div className="relative" key={`assets ${index}`}>
-                                            <img
-                                                className='size-10'
-                                                src={item.split("/")[1] === "uploads" ? import.meta.env.VITE_APP_baseApiURL + "/" + item : item}
-                                                alt={`assets-${index}`}
-                                            />
-                                            <IoMdClose
-                                                onClick={() => handleRemoveAsset(index)}
-                                                className="absolute -top-2 -right-2 cursor-pointer rounded-full bg-white text-red-500 text-sm border" />
-                                        </div>
-                                    ))
+                                    assetsBase64.length > 0 && assetsBase64.map((item, index) => {
+                                        return (
+                                            <div className="relative" key={`assets ${index}`}>
+                                                <img
+                                                    className='size-10'
+                                                    src={item.split("/")[0] === "uploads" ? `${import.meta.env.VITE_APP_baseApiURL}/${item}` : item}
+                                                    alt={`assets-${index}`}
+                                                />
+                                                <IoMdClose
+                                                    onClick={() => handleRemoveAsset(index)}
+                                                    className="absolute -top-2 -right-2 cursor-pointer rounded-full bg-white text-red-500 text-sm border" />
+                                            </div>
+                                        )
+                                    })
                                 }
                             </div>
                         </div>

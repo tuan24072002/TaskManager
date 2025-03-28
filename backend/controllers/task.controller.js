@@ -31,9 +31,9 @@ export const createTask = async (req, res) => {
         const task = await Task.create({
             title,
             team: formatTeam,
-            stage: stage.toLowerCase(),
+            stage: stage?.toLowerCase(),
             date,
-            priority: priority.toLowerCase(),
+            priority: priority?.toLowerCase(),
             assets: uploadedFiles.length > 0 ? uploadImage(uploadedFiles) : [],
             activities: [
                 {
@@ -134,12 +134,12 @@ export const updateTask = async (req, res) => {
             task.title = title;
             task.date = date;
             task.team = formatTeam;
-            task.stage = stage.toLowerCase();
+            task.stage = stage?.toLowerCase();
             task.priority = priority?.toLowerCase();
             task.assets = finalAssets;
             task.description = description;
         } else {
-            task.stage = stage.toLowerCase();
+            task.stage = stage?.toLowerCase();
         }
         await task.save();
 
@@ -199,7 +199,7 @@ export const postTaskActivity = async (req, res) => {
 
         const task = await Task.findById(id);
         const data = {
-            type: type.toLowerCase(),
+            type: type?.toLowerCase(),
             activity,
             by: userId
         }
